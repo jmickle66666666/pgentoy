@@ -1,0 +1,119 @@
+<html>
+<body>
+<script>
+var tools = {
+	
+	texture2D : {
+		name : "Texture 2D",
+		input : "None",
+		output : "Texture",
+		process : function () {
+
+			var width = 128;
+			var height = 128;
+			var output = document.createElement('canvas');
+			output.id = "junk";
+			output.width = width;
+			output.height = height;
+			return output;
+
+		}
+	},
+
+	noise : {
+		name : "Random Noise",
+		input : "Texture",
+		output : "Texture",
+		process : function (input) {
+
+			var ctx = input.getContext('2d');
+			// set all the pixels on the canvas random values
+			return input;
+
+		}
+
+	},
+
+	fillRed : {
+		name : "Fill Red",
+		input : "Texture",
+		output : "Texture",
+		process : function (input) {
+
+			var ctx = input.getContext('2d');
+			ctx.fillStyle = "rgb(200,0,0)";
+			ctx.fillRect(0,0,input.width,input.height);
+			return input;
+
+		}
+
+	},
+
+	junkText : {
+		name : "Junk Text",
+		input : "Texture",
+		output : "Texture",
+		process : function (input) {
+
+			var ctx = input.getContext('2d');
+			ctx.fillStyle = "rgb(0,0,0)";
+			ctx.fillText("junk",input.width/2,input.height/2);
+			return input;
+
+		}
+	}
+
+}
+
+var control = {
+	
+	currentType : "None",
+	currentObject : null,
+	preview : function () {
+
+		if (this.currentObject == null) {
+			console.log("got a null on preview")
+			return null;
+		}
+
+		if (this.currentType == "Texture") {
+			return this.currentObject;
+		}
+
+	},
+	processList : [],
+	runAll : function () {
+
+		for (var i = 0; i < this.processList.length; i++) {
+
+			console.log("Running process: "+this.processList[i].name)
+
+			if (this.processList[i].input != "None") {
+
+				if (this.processList[i].input != this.currentType) console.log("Warning, i/o mismatch at instruction "+i);
+
+				this.currentObject = this.processList[i].process(this.currentObject);
+				this.currentType = this.processList[i].output;
+
+			} else {
+
+				this.currentObject = this.processList[i].process();
+				this.currentType = this.processList[i].output;
+
+			}
+
+		}
+
+	}
+
+}
+
+master = Object.create(control);
+master.processList.push(Object.create(tools.texture2D));
+master.processList.push(Object.create(tools.fillRed));
+master.processList.push(Object.create(tools.junkText));
+master.runAll();
+document.body.appendChild(master.preview());
+</script>
+</body>
+</html>
