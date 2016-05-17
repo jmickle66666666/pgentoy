@@ -1,5 +1,9 @@
 <html>
 <body>
+<button onClick='build();'>build</button>
+<button onClick='updateProcessList();'>update list</button>
+<div id='preview'>Output:<p></div>
+<div id='processList'></div> 
 <script>
 var tools = {
 	
@@ -66,7 +70,6 @@ var tools = {
 }
 
 var control = {
-	
 	currentType : "None",
 	currentObject : null,
 	preview : function () {
@@ -104,6 +107,24 @@ var control = {
 
 		}
 
+	},
+	buildProcessListPreview : function () {
+
+		var output = "<p>Process: <p>";
+
+		for (var i = 0; i < this.processList.length; i++) {
+			var procDiv = '<div class="processElement">';
+			procDiv += 'Name: '+this.processList[i].name;
+			procDiv += '<br>';
+			procDiv += 'Input: '+this.processList[i].input;
+			procDiv += '<br>';
+			procDiv += 'Output: '+this.processList[i].output;
+			procDiv += '</div><p>';
+			output += procDiv;
+		}
+
+		return output;
+
 	}
 
 }
@@ -112,8 +133,25 @@ master = Object.create(control);
 master.processList.push(Object.create(tools.texture2D));
 master.processList.push(Object.create(tools.fillRed));
 master.processList.push(Object.create(tools.junkText));
-master.runAll();
-document.body.appendChild(master.preview());
+
+function clearPreview() {
+	var p = document.getElementById('preview');
+	while (p.firstChild) p.removeChild(p.firstChild);
+}
+
+function build() {
+	master.previewAllSteps = false;
+	clearPreview();
+	master.runAll();
+	document.getElementById('preview').appendChild(master.preview());
+}
+
+function updateProcessList() {
+	document.getElementById('processList').innerHTML = master.buildProcessListPreview();
+}
+
+updateProcessList();
+
 </script>
 </body>
 </html>
