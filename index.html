@@ -1,7 +1,9 @@
 <html>
 <body>
 <button onClick='build();'>build</button>
-<button onClick='updateProcessList();'>update list</button>
+<button onClick='clearProcessList();'>clear list</button>
+<div id='controls'>
+</div>
 <div id='preview'>Output:<p></div>
 <div id='processList'></div> 
 <script>
@@ -61,7 +63,7 @@ var tools = {
 
 			var ctx = input.getContext('2d');
 			ctx.fillStyle = "rgb(0,0,0)";
-			ctx.fillText("junk",input.width/2,input.height/2);
+			ctx.fillText("junk",Math.random() * input.width,Math.random() * input.height);
 			return input;
 
 		}
@@ -134,6 +136,15 @@ master.processList.push(Object.create(tools.texture2D));
 master.processList.push(Object.create(tools.fillRed));
 master.processList.push(Object.create(tools.junkText));
 
+function buildControlButtons() {
+	document.getElementById('controls').innerHTML = "";
+	for (var i = 0; i < Object.keys(tools).length; i++) {
+		document.getElementById('controls').innerHTML += "<button onClick='master.processList.push(Object.create(tools."+Object.keys(tools)[i]+"));updateProcessList();'> add "+tools[Object.keys(tools)[i]].name+"</button>"
+	}
+}
+
+buildControlButtons();
+
 function clearPreview() {
 	var p = document.getElementById('preview');
 	while (p.firstChild) p.removeChild(p.firstChild);
@@ -148,6 +159,11 @@ function build() {
 
 function updateProcessList() {
 	document.getElementById('processList').innerHTML = master.buildProcessListPreview();
+}
+
+function clearProcessList() {
+	master.processList = [];
+	updateProcessList();
 }
 
 updateProcessList();
